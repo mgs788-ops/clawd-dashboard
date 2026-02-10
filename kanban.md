@@ -1,12 +1,12 @@
 # Kanban (Mr Helper)
 
 ## Backlog
-- [ ] Moltbot self-audit + community best-practice review (est: 4–6h)
 - [ ] Email monitoring for mrhelperbot@icloud.com (Himalaya + app-specific password) — decide A(draft) vs B(auto-send)
 - [ ] Daily AI Agent Use-Case Scout (Modbot) — review outputs + decide YES/NO daily
-- [ ] Spending Behaviour Deep Dive — 12 months (plan drafted; needs full 12 months data)
 
 ## In progress
+- [ ] OpenClaw comprehensive audit (Opus sub-agent - deep 4-6h analysis)
+- [ ] Spending deep dive analysis (Opus sub-agent - processing spending + loan data)
 
 ## System / Reliability
 - [ ] Cross-context messaging (Slack↔Telegram) — enable `tools.message.crossContext.allowAcrossProviders` + add permission/confirmation guardrails; validate via `openclaw doctor`
@@ -15,6 +15,7 @@
 - [x] ~~Run `openclaw gateway restart`~~ (done 2026-02-10)
 
 ## Done
+- [x] OpenClaw self-audit initial (14-section analysis) - now enhanced with Opus deep dive (2026-02-10)
 - [x] Cron monitor hardening completed (exec allowlist verified, failure alerts tested) (2026-02-10)
 - [x] Logging redaction patterns enhanced (added GitHub, AWS, JWT, Google tokens) (2026-02-10)
 - [x] Security audit completed + credentials directory permissions fixed (chmod 700) (2026-02-10)
