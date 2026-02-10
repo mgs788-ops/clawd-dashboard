@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark's Kanban Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .header h1 {
+            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .last-updated {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .section {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .section h2 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+        
+        .section.in-progress {
+            border-left-color: #FF9800;
+        }
+        
+        .section.in-progress h2 {
+            color: #FF9800;
+        }
+        
+        .section.waiting {
+            border-left-color: #2196F3;
+        }
+        
+        .section.waiting h2 {
+            color: #2196F3;
+        }
+        
+        .section.done {
+            border-left-color: #4CAF50;
+        }
+        
+        .section.system {
+            border-left-color: #9C27B0;
+        }
+        
+        .section.system h2 {
+            color: #9C27B0;
+        }
+        
+        .task {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: #333;
+            border-radius: 5px;
+            border-left: 2px solid transparent;
+        }
+        
+        .task.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+            border-left-color: #4CAF50;
+        }
+        
+        .task.in-progress {
+            border-left-color: #FF9800;
+            background: #3a2f1a;
+        }
+        
+        .wip-limit {
+            color: #FF9800;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #888;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 50px;
+            color: #f44336;
+            background: #2a1a1a;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+        
+        .refresh-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .refresh-indicator.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="refresh-indicator" id="refreshIndicator">Updated</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📋 Mark's Kanban</h1>
+            <div class="last-updated" id="lastUpdated">Loading...</div>
+        </div>
+        
+        <div id="content" class="loading">
+            Loading kanban data...
+        </div>
+    </div>
+
+    <script>
+        let githubRepo = 'mgs788-ops/clawd-dashboard';
+        let githubBranch = 'main';
+        
+        async function fetchKanban() {
+            try {
+                // Try to fetch from GitHub raw content
+                const response = await fetch(`https://raw.githubusercontent.com/${githubRepo}/${githubBranch}/kanban.md?${Date.now()}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const content = await response.text();
+                return content;
+            } catch (error) {
+                throw new Error(`Failed to fetch kanban: ${error.message}`);
+            }
+        }
+        
+        function parseKanban(markdown) {
+            const lines = markdown.split('\n');
+            const sections = [];
+            let currentSection = null;
+            
+            for (const line of lines) {
+                if (line.startsWith('##')) {
+                    if (currentSection) {
+                        sections.push(currentSection);
+                    }
+                    currentSection = {
+                        title: line.replace('##', '').trim(),
+                        items: []
+                    };
+                } else if (line.trim().startsWith('-') && currentSection) {
+                    const item = line.trim().substring(1).trim();
+                    const isCompleted = item.startsWith('[x]') || item.startsWith('[~]');
+                    const isInProgress = item.startsWith('[ ]') && currentSection.title.toLowerCase().includes('progress');
+                    
+                    currentSection.items.push({
+                        text: item,
+                        completed: isCompleted,
+                        inProgress: isInProgress
+                    });
+                }
+            }
+            
+            if (currentSection) {
+                sections.push(currentSection);
+            }
+            
+            return sections;
+        }
+        
+        function getSectionClass(title) {
+            const lower = title.toLowerCase();
+            if (lower.includes('progress')) return 'in-progress';
+            if (lower.includes('waiting')) return 'waiting';
+            if (lower.includes('done')) return 'done';
+            if (lower.includes('system') || lower.includes('reliability')) return 'system';
+            return 'backlog';
+        }
+        
+        function renderKanban(sections) {
+            const contentDiv = document.getElementById('content');
+            
+            contentDiv.innerHTML = `
+                <div class="sections">
+                    ${sections.map(section => `
+                        <div class="section ${getSectionClass(section.title)}">
+                            <h2>
+                                ${section.title}
+                                ${section.title.includes('WIP limit') ? '<span class="wip-limit">(Check limits)</span>' : ''}
+                            </h2>
+                            ${section.items.length === 0 ? 
+                                '<div style="color: #666; font-style: italic;">No items</div>' :
+                                section.items.map(item => `
+                                    <div class="task ${item.completed ? 'completed' : ''} ${item.inProgress ? 'in-progress' : ''}">
+                                        ${item.text}
+                                    </div>
+                                `).join('')
+                            }
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function showRefreshIndicator() {
+            const indicator = document.getElementById('refreshIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 1500);
+        }
+        
+        async function updateDashboard() {
+            try {
+                const kanbanContent = await fetchKanban();
+                const sections = parseKanban(kanbanContent);
+                renderKanban(sections);
+                
+                const lastUpdated = document.getElementById('lastUpdated');
+                lastUpdated.textContent = `Last updated: ${new Date().toLocaleString()}`;
+                
+                showRefreshIndicator();
+            } catch (error) {
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = `
+                    <div class="error">
+                        <h2>⚠️ Error Loading Kanban</h2>
+                        <p>${error.message}</p>
+                        <p>Make sure the GitHub repository is public and the path is correct.</p>
+                        <p><small>Trying to fetch from: ${githubRepo}/kanban.md</small></p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initial load
+        updateDashboard();
+        
+        // Auto-refresh every 60 seconds
+        setInterval(updateDashboard, 60000);
+        
+        // Refresh when tab becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                updateDashboard();
+            }
+        });
+    </script>
+</body>
+</html>
