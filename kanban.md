@@ -20,7 +20,7 @@
 
 ## Done
 - [x] Podcast recommendations completed (30+ shows across business, tech, finance, property) (2026-02-10)
-- [x] Monthly property tracking system designed (automated realestate.com.au monitoring) (2026-02-10)
+- [x] PropTrack scraping system implemented (automated property value tracking with Puppeteer) (2026-02-10)
 - [x] LTR capital reallocation analysis completed - hybrid strategy recommended (2026-02-10)
 - [x] Dashboard auto-sync fully operational (kanban.md → GitHub Pages every 10 min, zero manual work) (2026-02-10)
 - [x] LTR investment brief completed with Dec 2025 quarterly data (2026-02-10)
@@ -32,8 +32,8 @@
 - [x] GitHub Pages kanban dashboard — live at https://mgs788-ops.github.io/clawd-dashboard/
 
 ## Drafts created (awaiting input)
+- [~] PropTrack scraper system: scripts/property-tracker.mjs + scripts/proptrack-scraper-setup.md
 - [~] Podcast recommendations (30+ shows): reports/2026-02-10_podcast-recommendations-for-mark.md
-- [~] Property tracking system: scripts/property-tracker.mjs
 - [~] LTR capital reallocation options: reports/2026-02-10_LTR-capital-reallocation-options.md
 - [~] LTR investment brief draft: reports/2026-02-07_LTR-investment-brief_draft.md
 - [~] Spending deep dive plan: reports/2026-02-07_Spending-behaviour-deep-dive_plan.md
