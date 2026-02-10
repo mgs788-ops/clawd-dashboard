@@ -12,7 +12,6 @@
 - [ ] Spending Behaviour Deep Dive — 12 months (plan drafted; needs full 12 months data)
 
 ## In progress
-- [ ] LTR investment brief (draft created; needs ASX filing verification + your cost base)
 
 ## System / Reliability
 - [ ] Cron monitor (2x consecutive errors) — enable exec allowlist for main + re-enable cron after gateway restart
@@ -23,11 +22,14 @@
 - [x] ~~Run `openclaw gateway restart`~~ (done 2026-02-10)
 
 ## Done
+- [x] Dashboard auto-sync script created (scripts/sync-dashboard.sh + setup docs) — ready for test run (2026-02-10)
+- [x] LTR investment brief completed with Dec 2025 quarterly data (2026-02-10)
 - [x] Europe trip — flight shortlist + cost bands (closed per Mark)
 - [x] Financial snapshot + analysis (screenshots + PDFs) delivered (2026-02-06)
 - [x] Slack wiring prep in OpenClaw (config added; awaiting xoxb/xapp tokens)
 - [x] Moltbot use cases scan (initial)
 - [x] Telegram setup + WhatsApp disabled
+- [x] GitHub Pages kanban dashboard — live at https://mgs788-ops.github.io/clawd-dashboard/
 
 ## Drafts created (awaiting input)
 - [~] LTR investment brief draft: reports/2026-02-07_LTR-investment-brief_draft.md
