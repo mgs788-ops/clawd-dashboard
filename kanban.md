@@ -3,6 +3,10 @@
 ## Backlog
 - [ ] Email monitoring for mrhelperbot@icloud.com (Himalaya + app-specific password) — decide A(draft) vs B(auto-send)
 - [ ] Daily AI Agent Use-Case Scout (Modbot) — review outputs + decide YES/NO daily
+- [ ] Evaluate skill-creator v5 (shared in Slack #silicon-saloon by U0ABPQQEQLX) — enhanced skill creation with security scans + library checks
+- [ ] Fix memory search (embeddings provider broken after OpenAI API key removal — needs alternative)
+- [ ] OpenClaw update to 2026.2.9
+- [ ] Clean up stale LaunchAgent plist (ai.openclaw.gateway — doctor flagged)
 
 ## In progress
 - [ ] OpenClaw comprehensive audit (Opus sub-agent - deep 4-6h analysis)
